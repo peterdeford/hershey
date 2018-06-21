@@ -46,15 +46,15 @@ for line in f:
     time_index = int((time[0])*60 + time[1])
     for i,field in enumerate(fields[5:]):
         if field=='Missing' or field=='None':
-            wait = 120
+            wait = 0.0
         else:
-            wait = int(field)
+            wait = float(field)
         
         r = rides[i][0]
         data[r][weekday].setdefault(day_index, [[],[]])[0].append(time_index)
         data[r][weekday][day_index][1].append(wait)
 
-print alphas
+#print alphas
 m = float(max(max(alphas.values()),1))
 for k in alphas.keys():
     v = alphas[k]
@@ -96,12 +96,13 @@ def draw_plot(coaster_name):
         dates = sorted(Y[i].keys())
         for j in range(len(dates)):
             date = dates[j]
-            x = Y[i][date][0]
+            x = [val/60. for val in Y[i][date][0]]
             y = Y[i][date][1]
-            print date, x, y
+            #print date, x, y
             source = ColumnDataSource(data={'x':x, 'y':y, 'date':[str(date) for _ in range(len(x))]})
             lr.append(
-                p.line('x', 'y', source=source, line_width=2, alpha=alphas[date],
+                p.scatter('x', 'y', source=source, line_width=2, alpha=alphas[date],
+                #p.line('x', 'y', source=source, line_width=2, alpha=alphas[date],
                        color=day_colors[i], hover_color='purple',)
             )
     p.xaxis.axis_label = "Time of Day"
